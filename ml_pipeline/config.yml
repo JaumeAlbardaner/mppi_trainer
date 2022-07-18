@@ -1,0 +1,112 @@
+rosbag_filepath: ./train.bag
+final_file_name: train.csv
+run_name: N03
+
+
+
+
+
+
+
+
+
+
+# this file specifies the parameters and arguments for the ml pipeline
+
+# shared args (used in multiple components of pipeline)
+standardize_data: False  # NOTE #1: this should be set to false when preprocessing the test dataset
+# NOTE #2: standardize_data needs to be set to True when generating predictions on a model trained with standardized data!
+state_cols:
+  - x_pos
+  - y_pos
+  - yaw
+  - roll
+  - u_x
+  - u_y
+  - yaw_der
+ctrl_cols:
+  - steering
+  - throttle
+feature_cols:
+  - roll
+  - u_x
+  - u_y
+  - yaw_der
+  - steering
+  - throttle
+label_cols:
+  - roll_der
+  - u_x_der
+  - u_y_der
+  - yaw_der_der
+
+# data preprocessing args TODO: add logic to handle preprocessing training and test data in same run
+# TODO: add logic to include multiple rosbag files
+preprocess_data: True
+make_preprocessing_plots: True
+total_data:  # total amount of data to keep in seconds, will keep all data if left blank
+
+topics:
+  - name: /ground_truth/state_transformed
+    col_mapper:
+      x: x_pos
+      y: y_pos
+      x.2: u_x
+      y.2: u_y
+      x.3: roll_der
+      z.3: yaw_der
+      secs: time
+    resample:
+      upsampling_factor: 1
+      downsampling_factor: 4  # resulting sample rate is up / down * original sample rate
+      cols:
+        - x_pos
+        - y_pos
+        - u_x
+        - u_y
+        - u_x_der
+        - u_y_der
+        - roll
+        - roll_der
+        - yaw
+        - yaw_der
+        - yaw_der_der
+    filename: df_state.csv
+    quaternion_to_euler: # optional arg
+      x: x.1
+      y: y.1
+      z: z.1
+      w: w
+    compute_derivatives: # optional arg
+      cols:
+        - u_x
+        - u_y
+        - yaw_der
+      degree: 3
+    trunc: # optional arg
+      cols:
+        - roll
+        - yaw
+      max: 3.14159
+      min: -3.14159
+  - name: /chassisState
+    col_mapper:
+      secs: time
+    resample:
+      upsampling_factor:
+      downsampling_factor: # if no values specified data sampling rate will match other topic data
+      cols:
+        - steering
+        - throttle
+    filename: df_ctrl.csv
+    trunc:
+      cols:
+        - steering
+        - throttle
+      max: 1.0
+      min: -1.0
+#  - name: /some_topic
+#     col_mapper:
+#     resample:
+#       cols:
+#     filename:
