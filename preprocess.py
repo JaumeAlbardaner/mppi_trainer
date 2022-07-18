@@ -39,10 +39,10 @@ def main(file_csv):
             x[i,3] = x[i-1,3]
 
     for i in range(len(y)):
-        #u_x_wlrd
+        #u_x_wrld
         if abs(y[i,0]) > 3:
             y[i,0] = y[i-1,0]
-        #u_y_wlrd
+        #u_y_wrld
         if abs(y[i,1]) > 3:
             y[i,1] = y[i-1,1]
         # - yaw_der
@@ -54,7 +54,8 @@ def main(file_csv):
 
     df = pd.DataFrame({"roll" : x[:,0], "u_x" : x[:,1], "u_y" : x[:,2], "yaw_der" : x[:,3], "steering" : x[:,4], "throttle" : x[:,5],
      "u_x_der" : y[:,0], "u_y_der" : y[:,1], "yaw_der_der" : y[:,2], "roll_der" : y[:,3]})
-    df.to_csv(file_csv[:-4] +"_preprocessed.csv", index=False)
+    name = file_csv.split('/')
+    df.to_csv(name[-1][:-4] +"_preprocessed.csv", index=False)
 
     x_axis = list(range(len(x)))
     
@@ -77,7 +78,8 @@ def main(file_csv):
     axs[6].legend()
     axs[7].plot(x_axis,y[:,3], color='tab:gray',   label = "roll_der"  )
     axs[7].legend()
-    plt.savefig('Preprocessed_inputs_'+file_csv[:-4] +'.pdf')
+
+    plt.savefig('Preprocessed_inputs_'+name[-1][:-4] +'.pdf')
 
 
 

@@ -121,7 +121,7 @@ def extract_bag_to_csv(bag_file, topics='all', folder='rosbag_files'):
 
         print("Extracting topic '%s'..." % topic_name)
         # Create a new CSV file for each topic
-        filename = folder + '/' + string.replace(topic_name, '/', '') + '.csv'
+        filename = folder + '/' + topic_name.replace('/', '') + '.csv'
         topic_files[topic_name] = filename
 
         with open(filename, 'w+') as csvfile:
@@ -135,12 +135,12 @@ def extract_bag_to_csv(bag_file, topics='all', folder='rosbag_files'):
                 status(percent)
                 # parse data from this instant, which is of the form of multiple lines of "Name: value\n" put it in the form of a list of 2-element lists
                 msg_string = str(msg)
-                msg_list = string.split(msg_string, '\n')
+                msg_list = msg_string.split('\n')
                 instantaneous_list_of_data = []
                 for nameValuePair in msg_list:
-                    split_pair = string.split(nameValuePair, ':')
+                    split_pair = nameValuePair.split( ':')
                     for i in range(len(split_pair)):  # should be 0 to 1
-                        split_pair[i] = string.strip(split_pair[i])
+                        split_pair[i] = split_pair[i].strip()
                     instantaneous_list_of_data.append(split_pair)
                 # write the first row from the first element of each pair
                 if first_iter:  # header

@@ -1,6 +1,6 @@
-rosbag_filepath: ./train.bag
-final_file_name: train.csv
-run_name: N03
+rosbag_filepath: ./test.bag
+final_file_name: test.csv
+run_name: N03_test
 
 
 
@@ -47,7 +47,7 @@ make_preprocessing_plots: True
 total_data:  # total amount of data to keep in seconds, will keep all data if left blank
 
 topics:
-  - name: /ground_truth/state_transformed
+  - name: /odom_reframer/odom_chassis
     col_mapper:
       x: x_pos
       y: y_pos
@@ -89,7 +89,7 @@ topics:
         - yaw
       max: 3.14159
       min: -3.14159
-  - name: /chassisState
+  - name: /vehicle_controls
     col_mapper:
       secs: time
     resample:

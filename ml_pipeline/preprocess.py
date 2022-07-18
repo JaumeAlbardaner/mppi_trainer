@@ -1,4 +1,5 @@
 """Data preprocessing class for state + control data"""
+from sqlite3 import Timestamp
 import pandas as pd
 from scipy import signal, interpolate
 import numpy as np
@@ -109,6 +110,22 @@ class DataClass:
         :type degree: int
         """
         t = self.df["time"]
+        time = 0
+        inconsistent = False
+        toberemoved = []
+        for i in range(len(t)):
+            if t[i] < time:
+                inconsistent = True
+                toberemoved.append(i)
+            else:
+                time = t[i]
+
+        if inconsistent:
+            print("There were "+str(len(toberemoved))+" inconsistent timesteps")
+            self.df = self.df.drop(toberemoved)
+
+        t = self.df["time"]
+
         for c in cols:
             y = self.df[c]
             # construct spline
