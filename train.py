@@ -7,6 +7,7 @@ import sys
 from matplotlib import pyplot as plt
 
 
+tf.enable_eager_execution()
 #Config needed because otherwise the GPU has no memory for training
 config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
@@ -15,9 +16,9 @@ sess = tf.compat.v1.Session(config=config)
 tf.keras.backend.set_floatx('float64')
 
 def usage():
-  print("USAGE: python3 train.py <train.csv> <test.csv>")
+  print("USAGE: python3 train.py <train.csv> <test.csv> OPTIONAL: <nnet.npz>")
 
-def main(train_csv, test_csv):
+def main(train_csv, test_csv, nnet = None):
   train = pd.read_csv(train_csv)
   test = pd.read_csv(test_csv)
   x_train = train[["roll", "u_x","u_y", "yaw_der", "steering", "throttle"]].to_numpy()
@@ -30,9 +31,9 @@ def main(train_csv, test_csv):
 
 
   # THESE ARE THE DESIGN PARAMETERS OF THE NEURAL NETWORK
-  input_shape = 6        # number of independent input parameters
-  input_timesteps = 1     # number of previous vehicle states to inlcude into neural network input
-  output_shape = 4        # number of vehicle states (output of NN); DO NOT CHANGE
+  # input_shape = 6        # number of independent input parameters
+  # input_timesteps = 1     # number of previous vehicle states to inlcude into neural network input
+  # output_shape = 4        # number of vehicle states (output of NN); DO NOT CHANGE
   learning_rate = 0.001  # should not exceed 0.0005
   initializer = "he"
   l2regularization = 0.001
@@ -54,26 +55,31 @@ def main(train_csv, test_csv):
 
   model = tf.keras.models.Sequential()
   model.add(tf.keras.Input(shape=(6,)))
-  model.add(
-      tf.keras.layers.Dense(32,
+  layer_a = tf.keras.layers.Dense(32,
                           use_bias=True,
                           bias_initializer='zeros',
                           activation='tanh',
                           kernel_initializer=kernel_init,
                           kernel_regularizer=reg_dense)
-                          )
-
-  model.add(
-      tf.keras.layers.Dense(32,
+  layer_b = tf.keras.layers.Dense(32,
                           bias_initializer='zeros',
                           use_bias=True,
                           activation='tanh',
                           kernel_initializer=kernel_init,
                           kernel_regularizer=reg_dense)
-                          )
+  layer_c = tf.keras.layers.Dense(4)
 
-  model.add(
-      tf.keras.layers.Dense(4))
+  model.add(layer_a)
+  model.add(layer_b)
+  model.add(layer_c)
+
+  #After adding the layers to the model the weight matrix has values now
+  if nnet is not None:
+    old_nnet = np.load("autorally.npz")
+    layer_a.set_weights(list([np.transpose(old_nnet['dynamics_W1']),np.transpose(old_nnet['dynamics_b1'])]))
+    layer_b.set_weights(list([np.transpose(old_nnet['dynamics_W2']),np.transpose(old_nnet['dynamics_b2'])]))
+    layer_c.set_weights(list([np.transpose(old_nnet['dynamics_W3']),np.transpose(old_nnet['dynamics_b3'])]))
+
 
 
   optimizer = 'Nesterov-ADAM'
@@ -108,7 +114,7 @@ def main(train_csv, test_csv):
   model.summary()
 
   #Training the model
-  epochs = 200  
+  epochs = 10  
   error_epochs = np.empty([epochs, 4], dtype='float64')
   for epoch in range(epochs):
 
@@ -116,6 +122,8 @@ def main(train_csv, test_csv):
     #Run one epoch of the training
     model.fit(x_train, y_train, epochs=1,
                 callbacks=[tensorboard_callback])
+    # if(epoch%10 == 0):
+    #   model.save('./tmp/model')
 
     #Calculate losses/progress per variable
     predic = model.predict(x_train)
@@ -155,12 +163,18 @@ def main(train_csv, test_csv):
     files[bias_name + str(it)] = layer.bias
     files[weight_name + str(it)] = layer.weights[0]
     it +=1
-  np.savez('model.npz', **files)
+  np.savez('custom.npz', **files)
 
 if __name__ == '__main__':
-  if len(sys.argv) != 3:
-    usage()
-  else:
+  if len(sys.argv) == 3:
     train_csv = sys.argv[1]
     test_csv = sys.argv[2]
     main(train_csv, test_csv)
+  if len(sys.argv) == 4:
+    train_csv = sys.argv[1]
+    test_csv = sys.argv[2]
+    nnet = sys.argv[3]
+    main(train_csv, test_csv, nnet)
+    
+  else:
+    usage()
