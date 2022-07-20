@@ -7,7 +7,6 @@ import sys
 from matplotlib import pyplot as plt
 
 
-tf.enable_eager_execution()
 #Config needed because otherwise the GPU has no memory for training
 config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
@@ -170,11 +169,10 @@ if __name__ == '__main__':
     train_csv = sys.argv[1]
     test_csv = sys.argv[2]
     main(train_csv, test_csv)
-  if len(sys.argv) == 4:
+  elif len(sys.argv) == 4:
     train_csv = sys.argv[1]
     test_csv = sys.argv[2]
     nnet = sys.argv[3]
     main(train_csv, test_csv, nnet)
-    
   else:
     usage()
