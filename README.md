@@ -113,3 +113,30 @@ For this purpose an [external repository](https://github.com/rdesc/autorally/tre
 This procedure should yield a custom.npz file, as well as a `Errors.png` graph displaying the evolution of the errors.
 
 To change the learning rate, change the value on line [#36](https://github.com/JaumeAlbardaner/mppi_trainer/blob/b9f4ccc63cfa0aa032b7a3ea56c69edf545c2532/train.py#L36), and to change the number of epochs, change the value on line [#116](https://github.com/JaumeAlbardaner/mppi_trainer/blob/b9f4ccc63cfa0aa032b7a3ea56c69edf545c2532/train.py#L116).
+
+### 2.4 NN Usage:
+
+1.  Copy the NN to the MPPI directory where it's supposed to be loaded from:
+    ```
+    cp custom.npz ~/catkin_ws/src/ninjacar_mppi/autorally_control/src/path_integral/params/models/
+    ``` 
+
+2.  Modify the desired `.launch` file, setting the **model_path** variable to the following value:
+    ```
+    "$(env AR_MPPI_PARAMS_PATH)/models/custom.npz"
+    ```
+
+3.  Roslaunch it!
+
+## Sidenotes:
+
+1.  If the `train.py` script returns:
+    ```
+    ValueError: Can't convert Python sequence with mixed types to Tensor.
+    ```
+    comment lines 61 and 67 (kernel_initializers)
+
+2. To observe in real time how the mean square error is evolving during training, execute the following command:
+    ```
+    tensorboard --logdir logs/
+    ```
