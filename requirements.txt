@@ -7,3 +7,6 @@ scipy==1.5.4
 testresources==2.0.1
 tensorflow-gpu==2.6.2
 torch==1.10.2
+pycryptodomex==3.15.0
+gnupg==2.3.1
+rospkg==1.4.0

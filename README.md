@@ -91,14 +91,16 @@ For this purpose an [external repository](https://github.com/rdesc/autorally/tre
     python3 trainer.py
     ```
 
-4.  Preprocess the data:
+### 2.3 NN Training:
+
+1.  Preprocess the data:
     Establish the limits to your data in [preprocess.py](https://github.com/JaumeAlbardaner/mppi_trainer/blob/b9f4ccc63cfa0aa032b7a3ea56c69edf545c2532/preprocess.py#L27-L53), and perform this command for both the train and test csv files:
     ```
     cd ..
-    python3 preprocess.py ml_trainer/pipeline_files/N03_train/data/train.csv
+    python3 preprocess.py ml_pipeline/pipeline_files/N03_train/data/train.csv
     ```
 
-5.  Train your neural network:
+2.  Train your neural network:
     ```
     python3 train.py train_preprocessed.csv test_preprocessed.csv
     ``` 

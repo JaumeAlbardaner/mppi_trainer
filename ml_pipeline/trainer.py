@@ -138,17 +138,20 @@ def preprocess_data(args):
     if not os.path.exists(folder):
         os.makedirs(folder)
     else:
-        # prompt user if directory already exists
-        answer = None
-        while not(answer == "y" or answer == "n"):
-            answer = raw_input("Replace already existing directory %s? (y/n): " % folder).lower().strip()
-            print("")
-        if answer == "y":
-            shutil.rmtree(folder)
-            os.makedirs(folder)
-        else:
-            print("Keeping old directory and leaving preprocessing files in working directory %s..." % os.getcwd())
-            exit(0)
+        shutil.rmtree(folder)
+        os.makedirs(folder)
+
+        # # prompt user if directory already exists
+        # answer = None
+        # while not(answer == "y" or answer == "n"):
+        #     answer = raw_input("Replace already existing directory %s? (y/n): " % folder).lower().strip()
+        #     print("")
+        # if answer == "y":
+        #     shutil.rmtree(folder)
+        #     os.makedirs(folder)
+        # else:
+        #     print("Keeping old directory and leaving preprocessing files in working directory %s..." % os.getcwd())
+        #     exit(0)
 
     # move files
     for d in dirs:

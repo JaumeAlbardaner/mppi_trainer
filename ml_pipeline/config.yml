@@ -1,6 +1,6 @@
-rosbag_filepath: ./test.bag
-final_file_name: test.csv
-run_name: N03_test
+rosbag_filepath: ./train.bag
+final_file_name: train.csv
+run_name: N03_train
 
 
 
