@@ -58,13 +58,13 @@ def main(train_csv, test_csv, nnet = None):
                           use_bias=True,
                           bias_initializer='zeros',
                           activation='tanh',
-                          kernel_initializer=kernel_init,
+                          # kernel_initializer=kernel_init,
                           kernel_regularizer=reg_dense)
   layer_b = tf.keras.layers.Dense(32,
                           bias_initializer='zeros',
                           use_bias=True,
                           activation='tanh',
-                          kernel_initializer=kernel_init,
+                          # kernel_initializer=kernel_init,
                           kernel_regularizer=reg_dense)
   layer_c = tf.keras.layers.Dense(4)
 
@@ -79,11 +79,10 @@ def main(train_csv, test_csv, nnet = None):
     layer_b.set_weights(list([np.transpose(old_nnet['dynamics_W2']),np.transpose(old_nnet['dynamics_b2'])]))
     layer_c.set_weights(list([np.transpose(old_nnet['dynamics_W3']),np.transpose(old_nnet['dynamics_b3'])]))
 
-
-
   optimizer = 'Nesterov-ADAM'
   clipnorm = 1.0
   loss_function = 'mean_squared_error'
+
 
   if optimizer == 'ADAM':
       optimizer = tf.keras.optimizers.Adam(lr=learning_rate,
@@ -106,6 +105,7 @@ def main(train_csv, test_csv, nnet = None):
       optimizer = tf.keras.optimizers.Nadam(lr=learning_rate,
                                     clipnorm=clipnorm)  # , beta_1=0.91, beta_2=0.997)
 
+
   model.compile(optimizer=optimizer,
                         loss=loss_function,
                         metrics=['mae', 'mse'])
@@ -113,7 +113,7 @@ def main(train_csv, test_csv, nnet = None):
   model.summary()
 
   #Training the model
-  epochs = 10  
+  epochs = 0  
   error_epochs = np.empty([epochs, 4], dtype='float64')
   for epoch in range(epochs):
 
@@ -156,13 +156,12 @@ def main(train_csv, test_csv, nnet = None):
   files = {}
   # iterate over each set of weights and biases
   for layer in model.layers:
-    # if it == 0:
-    #   it +=1
-    #   continue
     files[bias_name + str(it)] = layer.bias
-    files[weight_name + str(it)] = layer.weights[0]
+    files[weight_name + str(it)] = tf.Variable(np.transpose(layer.weights[0]))
     it +=1
-  np.savez('custom.npz', **files)
+      
+  np.savez_compressed('custom.npz', dynamics_b1=files['dynamics_b1'],dynamics_b2=files['dynamics_b2'],dynamics_b3=files['dynamics_b3'], \
+  dynamics_W3=files['dynamics_W3'],dynamics_W2=files['dynamics_W2'],dynamics_W1=files['dynamics_W1'])
 
 if __name__ == '__main__':
   if len(sys.argv) == 3:
