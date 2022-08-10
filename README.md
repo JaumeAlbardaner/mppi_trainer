@@ -1,5 +1,5 @@
 # mppi_trainer
-This repository contains tools to train a neural network that describes the behavior of the dynamic model of the NinjaCar. It can be used to train any neural network that is to be used by the [MPPI algorithm](https://github.com/JaumeAlbardaner/ninjacar_mppi).
+This repository contains tools to train a neural network that describes the behavior of the dynamic model of the [NinjaCar](https://arpg.github.io/research.html). It can be used to train any neural network that is to be used by the [MPPI algorithm](https://github.com/JaumeAlbardaner/ninjacar_mppi).
 
 ## Contents:
 
@@ -30,7 +30,7 @@ This repository contains tools to train a neural network that describes the beha
 
 ·   **yaw_der_der**: Negated *yaw_der*.
 
-**WARNING:** The *yaw_der* is negated because their mocap space provides the negative value of the yaw derivative (as they explain in [this line](https://github.com/AutoRally/autorally/blob/48bae14fe4b2d56e5ca11fd2fec3d7dfac7a0e75/autorally_control/include/autorally_control/path_integral/neural_net_model.cu#L196)), it may not be necessary in our case. Nevertheless, left as-is has worked with the [pre-trained model](https://github.com/AutoRally/autorally/blob/melodic-devel/autorally_control/src/path_integral/params/models/autorally_nnet_09_12_2018.npz).
+**WARNING:** The *yaw_der* is negated because GeorgiaTech's mocap space provides the negative value of the yaw derivative (as they explain in [this line](https://github.com/AutoRally/autorally/blob/48bae14fe4b2d56e5ca11fd2fec3d7dfac7a0e75/autorally_control/include/autorally_control/path_integral/neural_net_model.cu#L196)), it may not be necessary in our case. Nevertheless, left as-is has worked with the [pre-trained model](https://github.com/AutoRally/autorally/blob/melodic-devel/autorally_control/src/path_integral/params/models/autorally_nnet_09_12_2018.npz).
 
 ·   **roll_der**: Roll derivative.
 
@@ -98,6 +98,7 @@ For this purpose an [external repository](https://github.com/rdesc/autorally/tre
     ```
     cd ..
     python3 preprocess.py ml_pipeline/pipeline_files/N03_train/data/train.csv
+    python3 preprocess.py ml_pipeline/pipeline_files/N03_test/data/test.csv
     ```
 
 2.  Train your neural network:
@@ -105,12 +106,12 @@ For this purpose an [external repository](https://github.com/rdesc/autorally/tre
     python3 train.py train_preprocessed.csv test_preprocessed.csv
     ``` 
 
-    **UNTESTED RESULTS** For enhanced results, insted of starting from a weird initialization, you may start training your neural network from the AutoRally's one by calling:
+    **UNTESTED RESULTS (BUT MORE LIKELY TO DELIVER BETTER PERFORMACE)** For enhanced results, insted of starting from a weird initialization, you may start training your neural network from the AutoRally's one by calling:
     ```
     python3 train.py train_preprocessed.csv test_preprocessed.csv autorally.npz
     ``` 
 
-This procedure should yield a custom.npz file, as well as a `Errors.png` graph displaying the evolution of the errors.
+This procedure should yield a `custom.npz` file, as well as a `Errors.png` graph displaying the evolution of the errors.
 
 To change the learning rate, change the value on line [#36](https://github.com/JaumeAlbardaner/mppi_trainer/blob/b9f4ccc63cfa0aa032b7a3ea56c69edf545c2532/train.py#L36), and to change the number of epochs, change the value on line [#116](https://github.com/JaumeAlbardaner/mppi_trainer/blob/b9f4ccc63cfa0aa032b7a3ea56c69edf545c2532/train.py#L116).
 

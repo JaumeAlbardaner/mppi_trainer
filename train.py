@@ -113,7 +113,7 @@ def main(train_csv, test_csv, nnet = None):
   model.summary()
 
   #Training the model
-  epochs = 0  
+  epochs = 10  
   error_epochs = np.empty([epochs, 4], dtype='float64')
   for epoch in range(epochs):
 
